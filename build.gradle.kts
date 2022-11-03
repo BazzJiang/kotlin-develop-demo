@@ -34,6 +34,7 @@ dependencies {
   implementation("io.vertx:vertx-web")
   implementation("io.vertx:vertx-mysql-client")
   implementation("io.vertx:vertx-lang-kotlin")
+  implementation("com.fasterxml.jackson.core:jackson-databind")
   implementation(kotlin("stdlib-jdk8"))
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")

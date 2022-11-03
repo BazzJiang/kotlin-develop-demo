@@ -57,7 +57,7 @@ import io.vertx.ext.web.Router
     vertx
       .createHttpServer()
       .requestHandler(router)
-      .listen(8888) { http ->
+      .listen(8890) { http ->
         if (http.succeeded()) {
           startPromise.complete()
           println("HTTP server started on port 8888")
