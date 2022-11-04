@@ -32,8 +32,10 @@ dependencies {
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
   implementation("io.vertx:vertx-web-validation")
   implementation("io.vertx:vertx-web")
+  //mysql依赖
   implementation("io.vertx:vertx-mysql-client")
   implementation("io.vertx:vertx-lang-kotlin")
+  //jackson依赖
   implementation("com.fasterxml.jackson.core:jackson-databind")
   implementation(kotlin("stdlib-jdk8"))
   testImplementation("io.vertx:vertx-junit5")
