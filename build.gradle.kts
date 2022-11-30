@@ -60,6 +60,8 @@ tasks.withType<Test> {
   }
 }
 
+//https://stackoverflow.com/questions/73012633/vert-x-address-already-in-use-bind-not-kill-processes-windows
+//必要要移除"--redeploy=$watchForChange",否则会导致IDEA无法正常结束进程,并且会导致无法正常调试
 tasks.withType<JavaExec> {
-  args = listOf("run", mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$launcherClassName", "--on-redeploy=$doOnChange")
+  args = listOf("run", mainVerticleName, "--launcher-class=$launcherClassName", "--on-redeploy=$doOnChange")
 }

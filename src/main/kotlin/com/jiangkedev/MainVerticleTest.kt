@@ -101,7 +101,7 @@ import io.vertx.sqlclient.SqlConnection
     vertx
       .createHttpServer()
       .requestHandler(router)
-      .requestHandler(hello(vertx))
+//      .requestHandler(hello(vertx))
       .listen(18889) { http ->
         if (http.succeeded()) {
           startPromise.complete()
