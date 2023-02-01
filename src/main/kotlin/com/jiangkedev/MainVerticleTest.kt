@@ -1,5 +1,6 @@
 package com.jiangkedev
 
+import com.jiangkedev.file.fileRouters
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Promise
@@ -102,7 +103,8 @@ import io.vertx.sqlclient.SqlConnection
     vertx
       .createHttpServer()
       .requestHandler(router)
-//      .requestHandler(hello(vertx))
+      .requestHandler(hello(vertx))
+      .requestHandler(fileRouters(vertx,pool))
       .listen(18889) { http ->
         if (http.succeeded()) {
           startPromise.complete()
