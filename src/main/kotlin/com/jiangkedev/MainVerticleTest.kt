@@ -66,7 +66,7 @@ import io.vertx.sqlclient.SqlConnection
       pool?.connection?.compose { conn: SqlConnection ->
         println("Got a connection from the pool")
         conn
-          .query("SELECT * FROM fhrs_dict_sex")
+          .query("SELECT * FROM common_attachment limit 10")
           .execute()
           .onComplete { ar: AsyncResult<RowSet<Row>>? ->
             // Release the connection to the pool
@@ -74,7 +74,8 @@ import io.vertx.sqlclient.SqlConnection
           }
       }?.onComplete { ar: AsyncResult<RowSet<Row>> ->
         if (ar.succeeded()) {
-          println("Done")
+          //打印查询结果
+          ar.result().forEach { row -> run { println(row.getString("attach_name")) } }
         } else {
           println("Something went wrong " + ar.cause().message)
         }
