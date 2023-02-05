@@ -1,6 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
+import org.jetbrains.kotlin.noarg.gradle.NoArgExtension
+
 
 plugins {
   kotlin ("jvm") version "1.6.10"
@@ -16,24 +19,44 @@ repositories {
 }
 
 val vertxVersion = "4.3.4"
+val kotlinVersion = "1.6.10"
 val junitJupiterVersion = "5.7.0"
 
-val mainVerticleName = "com.jiangkedev.MainVerticle"
+//val mainVerticleName = "com.jiangkedev.MainVerticle"
+val mainVerticleName = "com.jiangkedev.vertex.PgVerticle"
 val launcherClassName = "io.vertx.core.Launcher"
 
 val watchForChange = "src/**/*"
 val doOnChange = "${projectDir}/gradlew classes"
 
+val mutinyVertxVersion="2.14.2"
+
 application {
   mainClass.set(launcherClassName)
 }
 
+//仓库设置
+repositories{
+  mavenLocal()
+  maven() { url= uri("https://maven.aliyun.com/nexus/content/groups/public/") }
+  mavenCentral()
+}
+
+//依赖设置
 dependencies {
+  implementation("io.smallrye.reactive:smallrye-mutiny-vertx-core:${mutinyVertxVersion}")
+  implementation("io.smallrye.reactive:smallrye-mutiny-vertx-web:${mutinyVertxVersion}")
+  //pg客户端
+  implementation("io.smallrye.reactive:smallrye-mutiny-vertx-pg-client:${mutinyVertxVersion}")
+  //hibernate依赖
+  implementation("org.hibernate.reactive:hibernate-reactive-core:1.0.0.Final")
+
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
-  implementation("io.vertx:vertx-web-validation")
-  implementation("io.vertx:vertx-web")
-  //mysql依赖
+  //mysql驱动
   implementation("io.vertx:vertx-mysql-client")
+
+  //日志组件
+  implementation("ch.qos.logback:logback-classic:1.4.5")
   implementation("io.vertx:vertx-lang-kotlin")
   //jackson依赖
   implementation("com.fasterxml.jackson.core:jackson-databind")
@@ -64,4 +87,28 @@ tasks.withType<Test> {
 //必要要移除"--redeploy=$watchForChange",否则会导致IDEA无法正常结束进程,并且会导致无法正常调试
 tasks.withType<JavaExec> {
   args = listOf("run", mainVerticleName, "--launcher-class=$launcherClassName", "--on-redeploy=$doOnChange")
+}
+
+buildscript {
+  dependencies {
+    //添加无参方法插件
+    classpath("org.jetbrains.kotlin:kotlin-noarg:1.6.10")
+    //全开插件
+    classpath("org.jetbrains.kotlin:kotlin-allopen:1.6.10")
+  }
+}
+
+apply{
+  plugin("kotlin-jpa")
+  plugin("kotlin-allopen")
+}
+
+//全开插件配置
+configure<AllOpenExtension> {
+  annotation("javax.persistence.Entity")
+}
+
+//无参扩展函数
+configure<NoArgExtension> {
+  annotation("javax.persistence.Entity")
 }
