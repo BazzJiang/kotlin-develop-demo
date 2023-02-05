@@ -183,3 +183,8 @@ nbdist/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# 自定义
+.idea/
+.idea/jpa-buddy.xml
+build/
