@@ -1,5 +1,6 @@
 package com.jiangkedev.vertex
 
+import com.jiangkedev.ServiceEndpoint
 import com.jiangkedev.entity.AttachmentInfoEntity
 import io.smallrye.mutiny.Uni
 import io.smallrye.mutiny.vertx.core.AbstractVerticle
@@ -8,6 +9,8 @@ import io.vertx.mutiny.ext.web.Router
 import io.vertx.mutiny.ext.web.RoutingContext
 import io.vertx.mutiny.ext.web.handler.BodyHandler
 import org.hibernate.reactive.mutiny.Mutiny
+import java.util.*
+import java.util.stream.StreamSupport
 import javax.persistence.Persistence
 
 
@@ -37,8 +40,14 @@ class PgVerticle : AbstractVerticle() {
     router.post().handler(bodyHandler::handle)
     //设置回调函数
     router.get("/attachmentList").respond(this::listAttachmentInfo);
+    //通过服务提供者机制加载service
+    val main = Router.router(vertx)
+    ServiceLoader.load(ServiceEndpoint::class.java).forEach {s: ServiceEndpoint->
+      main.mountSubRouter(s.mountPoint(),s.router(vertx,emf))
+    }
     val startHttpServer: Uni<HttpServer> = vertx.createHttpServer()
       .requestHandler(router::handle)
+      .requestHandler(main::accept)
       .listen(8080)
       .onItem().invoke { _->println("HTTP server listening on port 8080") }
     return Uni.combine().all().unis<Any>(startHibernate, startHttpServer).discardItems()
