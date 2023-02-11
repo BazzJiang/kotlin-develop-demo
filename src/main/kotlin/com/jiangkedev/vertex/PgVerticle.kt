@@ -32,8 +32,6 @@ class PgVerticle : AbstractVerticle() {
         .unwrap(Mutiny.SessionFactory::class.java)
       Uni.createFrom().voidItem()
     }
-    startHibernate = vertx.executeBlocking(startHibernate)
-      .onItem().invoke { _ ->println("Hibernate Reactive is ready") }
     //设置路由
     val router: Router = Router.router(vertx)
     val bodyHandler: BodyHandler = BodyHandler.create()
@@ -42,11 +40,15 @@ class PgVerticle : AbstractVerticle() {
     router.get("/attachmentList").respond(this::listAttachmentInfo);
     //通过服务提供者机制加载service
     val main = Router.router(vertx)
-    ServiceLoader.load(ServiceEndpoint::class.java).forEach {s: ServiceEndpoint->
-      main.mountSubRouter(s.mountPoint(),s.router(vertx,emf))
-    }
+    startHibernate = vertx.executeBlocking(startHibernate)
+      .onItem().invoke { _ ->
+        println("Hibernate Reactive is ready")
+        ServiceLoader.load(ServiceEndpoint::class.java).forEach {s: ServiceEndpoint->
+          main.mountSubRouter(s.mountPoint(),s.router(vertx,emf))
+        }
+      }
     val startHttpServer: Uni<HttpServer> = vertx.createHttpServer()
-      .requestHandler(router::handle)
+//      .requestHandler(router::handle)
       .requestHandler(main::accept)
       .listen(8080)
       .onItem().invoke { _->println("HTTP server listening on port 8080") }
@@ -54,9 +56,9 @@ class PgVerticle : AbstractVerticle() {
   }
 
   private fun listAttachmentInfo(ctx: RoutingContext): Uni<List<AttachmentInfoEntity>>? {
-    return emf!!.withSession<List<AttachmentInfoEntity>> { session: Mutiny.Session ->
+    return emf!!.withSession { session: Mutiny.Session ->
       session
-        .createQuery<AttachmentInfoEntity>("from AttachmentInfoEntity", AttachmentInfoEntity::class.java)
+        .createQuery("from AttachmentInfoEntity", AttachmentInfoEntity::class.java)
         .getResultList()
     }
   }

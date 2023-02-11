@@ -12,13 +12,14 @@ import org.hibernate.reactive.mutiny.Mutiny
  *@description 提供文件上传服务
  */
 class FileService: ServiceEndpoint {
+
+
   override fun mountPoint(): String {
     return "/file"
   }
 
   override fun router(vertx: Vertx,emf: Mutiny.SessionFactory?): Router {
     return Router.router(vertx).apply {
-
       /**
        * 根据id查询附件信息
        */
