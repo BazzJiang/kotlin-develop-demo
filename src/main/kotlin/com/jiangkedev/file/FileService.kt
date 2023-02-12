@@ -1,8 +1,15 @@
 package com.jiangkedev.file
 
+import com.google.common.hash.HashCode
+import com.google.common.hash.Hashing
+import com.google.common.io.ByteSource
+import com.google.common.io.Files
 import com.jiangkedev.ServiceEndpoint
 import com.jiangkedev.entity.AttachmentInfoEntity
+import io.vertx.core.json.JsonObject
 import io.vertx.mutiny.core.Vertx
+import io.vertx.mutiny.core.buffer.Buffer
+import io.vertx.mutiny.core.file.AsyncFile
 import io.vertx.mutiny.ext.web.Router
 import org.hibernate.reactive.mutiny.Mutiny
 import java.util.*
@@ -27,28 +34,28 @@ class FileService: ServiceEndpoint {
       /**
        * 附件上传接口
        */
-//      post("/upload")
-//        .handler{ ctx->
-//          //处理文件上传
-//          val request = ctx.request()
-//          request.setExpectMultipart(true)
-//          request.uploadHandler{upload ->
-//            val attachName = upload.filename()
-//            val attachSize = upload.size()
-//            val file: AsyncFile = upload.file()
-//            val buffer: Buffer = Buffer.buffer()
-//            file.toBlockingStream().forEach { b->buffer.appendBuffer(b) }
-//            val byteSource: ByteSource = ByteSource.wrap(buffer.bytes)
-//            val ext =Files.getFileExtension(attachName)
-//            val hc: HashCode = byteSource.hash(Hashing.md5())
-//            val checksum: String = hc.toString()
-//            file.toBlockingStream()
-//            println("上传文件名称:$attachName")
-//          }
-//          ctx.json(JsonObject().put("status", 200).put("msg", "upload successed!"))
-//        }.failureHandler { _->
-//          println("upload failed!")
-//        }
+      post("/upload")
+        .handler{ ctx->
+          //处理文件上传
+          val request = ctx.request()
+          request.setExpectMultipart(true)
+          request.uploadHandler{upload ->
+            val attachName = upload.filename()
+            val attachSize = upload.size()
+            val file: AsyncFile = upload.file()
+            val buffer: Buffer = Buffer.buffer()
+            file.toBlockingStream().forEach { b->buffer.appendBuffer(b) }
+            val byteSource: ByteSource = ByteSource.wrap(buffer.bytes)
+            val ext = Files.getFileExtension(attachName)
+            val hc: HashCode = byteSource.hash(Hashing.md5())
+            val checksum: String = hc.toString()
+            file.toBlockingStream()
+            println("上传文件名称:$attachName")
+          }
+          ctx.json(JsonObject().put("status", 200).put("msg", "upload successed!"))
+        }.failureHandler { _->
+          println("upload failed!")
+        }
 
       /**
        * 文件下载

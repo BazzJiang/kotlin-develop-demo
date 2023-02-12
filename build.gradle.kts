@@ -49,9 +49,10 @@ dependencies {
   //pg客户端
   implementation("io.smallrye.reactive:smallrye-mutiny-vertx-pg-client:${mutinyVertxVersion}")
   //hibernate依赖
-  implementation("org.hibernate.reactive:hibernate-reactive-core:1.0.0.Final")
+  implementation("org.hibernate.reactive:hibernate-reactive-core:1.0.3.Final")
   //guava依赖
-//  implementation("com.google.guava:guava:31.1-jre")
+  //版本31有兼容性报错,参考:https://github.com/smallrye/jandex/issues/147
+  implementation("com.google.guava:guava:30.1.1-jre")
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
   //mysql驱动
   implementation("io.vertx:vertx-mysql-client")
