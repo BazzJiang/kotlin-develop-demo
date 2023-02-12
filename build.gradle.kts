@@ -50,7 +50,8 @@ dependencies {
   implementation("io.smallrye.reactive:smallrye-mutiny-vertx-pg-client:${mutinyVertxVersion}")
   //hibernate依赖
   implementation("org.hibernate.reactive:hibernate-reactive-core:1.0.0.Final")
-
+  //guava依赖
+//  implementation("com.google.guava:guava:31.1-jre")
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
   //mysql驱动
   implementation("io.vertx:vertx-mysql-client")
