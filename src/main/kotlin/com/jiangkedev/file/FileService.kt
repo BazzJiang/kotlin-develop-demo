@@ -1,16 +1,11 @@
 package com.jiangkedev.file
 
-import com.google.common.hash.HashCode
-import com.google.common.hash.Hashing
-import com.google.common.io.ByteSource
-import com.google.common.io.Files
 import com.jiangkedev.ServiceEndpoint
 import com.jiangkedev.entity.AttachmentInfoEntity
 import io.smallrye.mutiny.Uni
-import io.vertx.core.json.JsonObject
+import io.vertx.core.file.OpenOptions
 import io.vertx.mutiny.core.Vertx
 import io.vertx.mutiny.core.buffer.Buffer
-import io.vertx.mutiny.core.file.AsyncFile
 import io.vertx.mutiny.ext.web.Router
 import org.hibernate.reactive.mutiny.Mutiny
 import java.util.*
@@ -42,10 +37,18 @@ class FileService: ServiceEndpoint {
           request.setExpectMultipart(true)
           request.uploadHandler{upload ->
             println("文件上传名称${upload.filename()}")
-            upload.streamToFileSystem("D:\\app\\" +upload.filename())
+            val path = "D:\\app\\" +upload.filename();
+            upload.streamToFileSystem(path)
               .subscribe()
               .with {
                 println("文件上传成功!")
+                val options = OpenOptions()
+                vertx.fileSystem()
+                  .open(path,options)
+                  .subscribe()
+                  .with {
+                    println("文件读取成功!")
+                  }
               };
 //            val attachName = upload.filename()
 //            val attachSize = upload.size()
