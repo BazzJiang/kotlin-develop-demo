@@ -6,6 +6,7 @@ import com.google.common.io.ByteSource
 import com.google.common.io.Files
 import com.jiangkedev.ServiceEndpoint
 import com.jiangkedev.entity.AttachmentInfoEntity
+import io.smallrye.mutiny.Uni
 import io.vertx.core.json.JsonObject
 import io.vertx.mutiny.core.Vertx
 import io.vertx.mutiny.core.buffer.Buffer
@@ -35,24 +36,31 @@ class FileService: ServiceEndpoint {
        * 附件上传接口
        */
       post("/upload")
-        .handler{ ctx->
+        .respond{ ctx->
           //处理文件上传
           val request = ctx.request()
           request.setExpectMultipart(true)
           request.uploadHandler{upload ->
-            val attachName = upload.filename()
-            val attachSize = upload.size()
-            val file: AsyncFile = upload.file()
-            val buffer: Buffer = Buffer.buffer()
-            file.toBlockingStream().forEach { b->buffer.appendBuffer(b) }
-            val byteSource: ByteSource = ByteSource.wrap(buffer.bytes)
-            val ext = Files.getFileExtension(attachName)
-            val hc: HashCode = byteSource.hash(Hashing.md5())
-            val checksum: String = hc.toString()
-            file.toBlockingStream()
-            println("上传文件名称:$attachName")
+            println("文件上传名称${upload.filename()}")
+            upload.streamToFileSystem("D:\\app\\" +upload.filename())
+              .subscribe()
+              .with {
+                println("文件上传成功!")
+              };
+//            val attachName = upload.filename()
+//            val attachSize = upload.size()
+//            val file: AsyncFile = upload.file()
+//            val buffer: Buffer = Buffer.buffer()
+//            file.toBlockingStream().forEach { b->buffer.appendBuffer(b) }
+//            val byteSource: ByteSource = ByteSource.wrap(buffer.bytes)
+//            val ext = Files.getFileExtension(attachName)
+//            val hc: HashCode = byteSource.hash(Hashing.md5())
+//            val checksum: String = hc.toString()
+//            file.toBlockingStream()
+//            println("上传文件名称:$attachName")
           }
-          ctx.json(JsonObject().put("status", 200).put("msg", "upload successed!"))
+          //设置返回数据
+         Uni.createFrom().item(Unit)
         }.failureHandler { _->
           println("upload failed!")
         }

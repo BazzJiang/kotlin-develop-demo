@@ -56,12 +56,15 @@ dependencies {
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
   //mysql驱动
   implementation("io.vertx:vertx-mysql-client")
-
+  //协程
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
   //日志组件
   implementation("ch.qos.logback:logback-classic:1.4.5")
   implementation("io.vertx:vertx-lang-kotlin")
   //jackson依赖
   implementation("com.fasterxml.jackson.core:jackson-databind")
+  //依赖注入框架
+  implementation("com.google.dagger:dagger:2.45")
   implementation(kotlin("stdlib-jdk8"))
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
